@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/28 00:23:38 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 12:37:37 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 
 int	main(int argc, char **argv)
 {
-	t_table	t;
+	t_table	table;
 
-	if (parse_args(&t, argc, argv))
+	if (parse_args(&table, argc, argv))
 		return (1);
 	printf("n=%d die=%ld eat=%ld sleep=%ld must=%d enabled=%d\n",
-		t.philo_count, t.time_die, t.time_eat, t.time_sleep,
-		t.must_eat_count, t.must_eat_enabled);
+		table.philo_count, table.time_die, table.time_eat, table.time_sleep,
+		table.must_eat_count, table.must_eat_enabled);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 00:10:32 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/28 00:24:16 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 12:37:19 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,56 +14,56 @@
 
 #include <string.h>
 
-static int	set_counts(t_table *t, int argc, char **argv)
+static int	set_counts(t_table *table, int argc, char **argv)
 {
-	if (ft_atoi_strict(argv[1], &t->philo_count))
+	if (ft_atoi_strict(argv[1], &table->philo_count))
 		return (error_msg("invalid number_of_philosophers"));
 	if (argc == 6)
 	{
-		t->must_eat_enabled = 1;
-		if (ft_atoi_strict(argv[5], &t->must_eat_count))
+		table->must_eat_enabled = 1;
+		if (ft_atoi_strict(argv[5], &table->must_eat_count))
 			return (error_msg("invalid must_eat"));
 	}
 	else
 	{
-		t->must_eat_enabled = 0;
-		t->must_eat_count = 0;
+		table->must_eat_enabled = 0;
+		table->must_eat_count = 0;
 	}
 	return (0);
 }
 
-static int	set_times(t_table *t, char **argv)
+static int	set_times(t_table *table, char **argv)
 {
-	if (ft_atol_strict(argv[2], &t->time_die))
+	if (ft_atol_strict(argv[2], &table->time_die))
 		return (error_msg("invalid time_to_die"));
-	if (ft_atol_strict(argv[3], &t->time_eat))
+	if (ft_atol_strict(argv[3], &table->time_eat))
 		return (error_msg("invalid time_to_eat"));
-	if (ft_atol_strict(argv[4], &t->time_sleep))
+	if (ft_atol_strict(argv[4], &table->time_sleep))
 		return (error_msg("invalid time_to_sleep"));
 	return (0);
 }
 
-static int	check_rules(t_table *t)
+static int	check_rules(t_table *table)
 {
-	if (t->philo_count < 1)
+	if (table->philo_count < 1)
 		return (error_msg("number_of_philosophers must be >= 1"));
-	if (t->time_die < 1 || t->time_eat < 1 || t->time_sleep < 1)
+	if (table->time_die < 1 || table->time_eat < 1 || table->time_sleep < 1)
 		return (error_msg("time values must be >= 1"));
-	if (t->must_eat_enabled && t->must_eat_count < 1)
+	if (table->must_eat_enabled && table->must_eat_count < 1)
 		return (error_msg("must_eat must be >= 1"));
 	return (0);
 }
 
-int	parse_args(t_table *t, int argc, char **argv)
+int	parse_args(t_table *table, int argc, char **argv)
 {
-	if (!t)
-		return (error_msg("internal error"));
+	if (!table)
+		return (error_msg("internal error - parse_args()"));
 	if (argc != 5 && argc != 6)
 		return (error_msg("usage: ./philo n die eat sleep [must_eat]"));
-	memset(t, 0, sizeof(*t));
-	if (set_counts(t, argc, argv))
+	memset(table, 0, sizeof(*table));
+	if (set_counts(table, argc, argv))
 		return (1);
-	if (set_times(t, argv))
+	if (set_times(table, argv))
 		return (1);
-	return (check_rules(t));
+	return (check_rules(table));
 }

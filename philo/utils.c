@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 00:10:08 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/28 00:25:42 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 11:47:26 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <limits.h>
 #include <unistd.h>
 
-size_t	ft_strlen(char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -25,14 +25,14 @@ size_t	ft_strlen(char *s)
 	return (i);
 }
 
-void	putstr_fd(char *s, int fd)
+void	putstr_fd(const char *s, int fd)
 {
 	if (!s)
 		return ;
 	write(fd, s, ft_strlen(s));
 }
 
-int	error_msg(char *msg)
+int	error_msg(const char *msg)
 {
 	putstr_fd("Error\n", 2);
 	if (msg)
@@ -41,7 +41,7 @@ int	error_msg(char *msg)
 	return (1);
 }
 
-int	ft_atol_strict(char *s, long *out)
+int	ft_atol_strict(const char *s, long *out)
 {
 	long	n;
 	int		i;
@@ -69,7 +69,7 @@ int	ft_atol_strict(char *s, long *out)
 	return (0);
 }
 
-int	ft_atoi_strict(char *s, int *out)
+int	ft_atoi_strict(const char *s, int *out)
 {
 	long	n;
 
