@@ -6,7 +6,7 @@
 #    By: amtan <amtan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/27 23:17:02 by amtan             #+#    #+#              #
-#    Updated: 2026/01/28 00:25:31 by amtan            ###   ########.fr        #
+#    Updated: 2026/01/29 22:29:55 by amtan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC		:=	cc
 CFLAGS	:=	-Wall -Wextra -Werror
 CFLAGS	+=	-pthread
 
-SRCS	:=	main.c parse.c utils.c
+SRCS	:=	main.c parse.c utils.c init.c time.c state.c log.c
 OBJS	:=	$(SRCS:.c=.o)
 
 RM		:=	rm -f

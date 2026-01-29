@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 14:40:58 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/29 13:03:55 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 16:52:38 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,7 @@ static void	init_philos(t_table *table)
 		memset(philo, 0, sizeof(*philo));
 		philo->id = i + 1;
 		philo->left_fork = &table->forks[i];
-		if (table->philo_count == 1)
-			philo->right_fork = NULL;
-		else
-			philo->right_fork = &table->forks[(i + 1) % table->philo_count];
+		philo->right_fork = &table->forks[(i + 1) % table->philo_count];
 		philo->table = table;
 		i++;
 	}

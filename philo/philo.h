@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/29 12:46:21 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 22:11:16 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,24 @@ typedef struct s_table
 	t_philo			*philos;
 }	t_table;
 
-/* parse */
+/* parse.c */
 int		parse_args(t_table *table, int argc, char **argv);
 
-/* init / destroy */
+/* init.c */
 int		init_table(t_table *table);
 void	destroy_all(t_table *table);
 
-/* time */
-long	now_ms(void);
-long	since_start_ms(t_table *table);
+/* time.c */
+int		now_ms(long *out);
+int		since_start_ms(t_table *table, long *out);
+
+/* state.c */
+int		get_stop(t_table *table, int *out);
+int		set_stop(t_table *table, int value);
+int		get_last_meal(t_philo *philo, long *out);
+int		set_last_meal(t_philo *philo, long value);
+int		get_meals_eaten(t_philo *philo, int *out);
+
 int		ms_sleep(t_table *table, long ms);
 
 /* simulation */
@@ -67,7 +75,7 @@ int		monitor_loop(t_table *table);
 /* log */
 int		print_state(t_philo *philo, char *msg);
 
-/* utils */
+/* utils.c */
 int		error_msg(const char *msg);
 int		ft_atol_strict(const char *s, long *out);
 int		ft_atoi_strict(const char *s, int *out);

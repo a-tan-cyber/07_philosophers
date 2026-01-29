@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 00:10:08 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/29 11:47:26 by amtan            ###   ########.fr       */
+/*   Updated: 2026/01/29 17:31:05 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <limits.h>
 #include <unistd.h>
 
-size_t	ft_strlen(const char *s)
+static size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -25,7 +25,7 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-void	putstr_fd(const char *s, int fd)
+static void	putstr_fd(const char *s, int fd)
 {
 	if (!s)
 		return ;
