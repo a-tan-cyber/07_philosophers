@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/29 22:11:16 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/04 14:09:44 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	destroy_all(t_table *table);
 /* time.c */
 int		now_ms(long *out);
 int		since_start_ms(t_table *table, long *out);
+int		ms_sleep(t_table *table, long ms);
 
 /* state.c */
 int		get_stop(t_table *table, int *out);
@@ -65,8 +66,6 @@ int		get_last_meal(t_philo *philo, long *out);
 int		set_last_meal(t_philo *philo, long value);
 int		get_meals_eaten(t_philo *philo, int *out);
 
-int		ms_sleep(t_table *table, long ms);
-
 /* simulation */
 int		start_simulation(t_table *table);
 void	*philo_routine(void *arg);
@@ -74,6 +73,7 @@ int		monitor_loop(t_table *table);
 
 /* log */
 int		print_state(t_philo *philo, char *msg);
+int		print_death(t_philo *philo);
 
 /* utils.c */
 int		error_msg(const char *msg);
