@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/04 14:09:44 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/05 19:16:18 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,11 @@ int		get_meals_eaten(t_philo *philo, int *out);
 /* simulation */
 int		start_simulation(t_table *table);
 void	*philo_routine(void *arg);
+int		lock_print_state(t_table *table);
+int		unlock_both_return(t_table *table, int rc);
+int		monitor_find_dead_locked(t_table *table, t_philo **out_dead,
+			long now_ms);
+int		monitor_all_full_locked(t_table *table, int *out_full);
 int		monitor_loop(t_table *table);
 
 /* log */
