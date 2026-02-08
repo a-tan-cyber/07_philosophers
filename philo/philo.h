@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/05 19:16:18 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 17:58:24 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_table
 	int				must_eat_enabled;
 	long			start_ms;
 	int				stop;
+	int				fatal;
 	int				forks_init_count;
 	int				print_mtx_inited;
 	int				state_mtx_inited;
@@ -66,17 +67,44 @@ int		get_last_meal(t_philo *philo, long *out);
 int		set_last_meal(t_philo *philo, long value);
 int		get_meals_eaten(t_philo *philo, int *out);
 
-/* simulation */
+/* simulation.c */
 int		start_simulation(t_table *table);
-void	*philo_routine(void *arg);
+
+/* monitor.c */
+int		monitor_loop(t_table *table);
+
+/* monitor_lock.c */
 int		lock_print_state(t_table *table);
 int		unlock_both_return(t_table *table, int rc);
+
+/* monitor_checks.c */
 int		monitor_find_dead_locked(t_table *table, t_philo **out_dead,
 			long now_ms);
 int		monitor_all_full_locked(t_table *table, int *out_full);
-int		monitor_loop(t_table *table);
 
-/* log */
+/* philo_routine.c */
+void	*philo_routine(void *arg);
+
+/* philo_single.c */
+int		philo_single(t_philo *philo);
+
+/* philo_loop.c */
+void	philo_loop(t_philo *philo);
+
+/* philo_take_forks.c */
+int		philo_take_forks(t_philo *philo,
+			pthread_mutex_t **out_first, pthread_mutex_t **out_second);
+
+/* philo_eat.c */
+int		philo_eat_step(t_philo *philo);
+
+/* fatal.c */
+void	fatal_stop_no_lock(t_table *table);
+void	fatal_stop_best_effort(t_table *table);
+int		fatal_return(t_table *table);
+int		fatal_return_no_lock(t_table *table);
+
+/* log.c */
 int		print_state(t_philo *philo, char *msg);
 int		print_death(t_philo *philo);
 

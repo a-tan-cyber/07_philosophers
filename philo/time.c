@@ -6,13 +6,12 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/04 15:26:55 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/07 09:24:42 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-#include <complex.h>
 #include <sys/time.h>
 #include <unistd.h>
 

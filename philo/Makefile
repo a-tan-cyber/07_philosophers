@@ -6,7 +6,7 @@
 #    By: amtan <amtan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/27 23:17:02 by amtan             #+#    #+#              #
-#    Updated: 2026/02/05 19:19:12 by amtan            ###   ########.fr        #
+#    Updated: 2026/02/08 17:40:49 by amtan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,8 @@ CFLAGS	:=	-Wall -Wextra -Werror
 CFLAGS	+=	-pthread
 
 SRCS	:=	main.c parse.c utils.c init.c time.c state.c log.c monitor.c \
-				monitor_log.c monitor_checks.c
+				monitor_lock.c monitor_checks.c simulation.c philo_routine.c \
+				philo_single.c philo_loop.c philo_take.c philo_eat.c fatal.c
 OBJS	:=	$(SRCS:.c=.o)
 
 RM		:=	rm -f

@@ -1,29 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   philo_routine.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 18:21:57 by amtan            ###   ########.fr       */
+/*   Created: 2026/02/07 23:28:29 by amtan             #+#    #+#             */
+/*   Updated: 2026/02/08 17:38:43 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+void	*philo_routine(void *arg)
 {
-	t_table	table;
-	int		rc;
+	t_philo	*philo;
 
-	if (parse_args(&table, argc, argv))
-		return (1);
-	rc = 0;
-	if (init_table(&table))
-		rc = 1;
-	if (!rc && start_simulation(&table))
-		rc = 1;
-	destroy_all(&table);
-	return (rc);
+	philo = (t_philo *)arg;
+	if (!philo || !philo->table)
+		return (NULL);
+	if (philo->table->philo_count == 1)
+		philo_single(philo);
+	else
+		philo_loop(philo);
+	return (NULL);
 }

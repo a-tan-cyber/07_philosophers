@@ -1,29 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   philo_single.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 18:21:57 by amtan            ###   ########.fr       */
+/*   Created: 2026/02/08 17:39:33 by amtan             #+#    #+#             */
+/*   Updated: 2026/02/08 18:11:56 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+int	philo_single(t_philo *philo)
 {
-	t_table	table;
+	t_table	*table;
+	int		locked;
 	int		rc;
 
-	if (parse_args(&table, argc, argv))
+	if (!philo || !philo->table || !philo->left_fork)
 		return (1);
+	table = philo->table;
+	locked = 0;
 	rc = 0;
-	if (init_table(&table))
+	if (pthread_mutex_lock(philo->left_fork))
 		rc = 1;
-	if (!rc && start_simulation(&table))
+	else
+		locked = 1;
+	if (!rc && print_state(philo, "has taken a fork"))
 		rc = 1;
-	destroy_all(&table);
+	if (!rc && ms_sleep(table, table->time_die + 1))
+		rc = 1;
+	if (locked && pthread_mutex_unlock(philo->left_fork))
+		rc = 1;
+	if (rc)
+		fatal_stop_best_effort(table);
 	return (rc);
 }
