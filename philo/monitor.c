@@ -6,14 +6,13 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:42:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 22:15:27 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:26:24 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 #include <stdio.h>
-#include <unistd.h>
 
 static int	end_unlock(t_table *table, int *ended, int rc)
 {
@@ -84,7 +83,8 @@ int	monitor_loop(t_table *table)
 	{
 		if (monitor_once(table, &ended))
 			return (1);
-		usleep(1000);
+		if (!ended && monitor_idle_sleep(table))
+			return (1);
 	}
 	return (0);
 }

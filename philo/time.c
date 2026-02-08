@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 20:53:49 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:14:25 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int	since_start_ms(t_table *table, long *out)
 
 static int	pick_sleep_us(long remaining_ms)
 {
+	if (remaining_ms >= 10)
+		return (5000);
 	if (remaining_ms >= 2)
 		return (1000);
 	if (remaining_ms == 1)

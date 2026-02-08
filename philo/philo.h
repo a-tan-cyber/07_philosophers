@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 21:13:57 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:22:18 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,9 @@ int		unlock_both_return(t_table *table, int rc);
 int		monitor_find_dead_locked(t_table *table, t_philo **out_dead,
 			long now_ms);
 int		monitor_all_full_locked(t_table *table, int *out_full);
+
+/* monitor_wait.c */
+int		monitor_idle_sleep(t_table *table);
 
 /* philo_routine.c */
 void	*philo_routine(void *arg);
