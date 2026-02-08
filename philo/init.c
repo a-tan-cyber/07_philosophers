@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 14:40:58 by amtan             #+#    #+#             */
-/*   Updated: 2026/01/29 16:52:38 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 21:36:53 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,20 @@ void	destroy_all(t_table *table)
 	{
 		i = 0;
 		while (i < table->forks_init_count)
-		{
-			pthread_mutex_destroy(&table->forks[i]);
-			i++;
-		}
+			pthread_mutex_destroy(&table->forks[i++]);
 		free(table->forks);
 		table->forks = NULL;
-		table->forks_init_count = 0;
 	}
+	table->forks_init_count = 0;
 	if (table->print_mtx_inited)
 		pthread_mutex_destroy(&table->print_mtx);
 	table->print_mtx_inited = 0;
 	if (table->state_mtx_inited)
 		pthread_mutex_destroy(&table->state_mtx);
 	table->state_mtx_inited = 0;
+	if (table->stop_mtx_inited)
+		pthread_mutex_destroy(&table->stop_mtx);
+	table->stop_mtx_inited = 0;
 	free(table->philos);
 	table->philos = NULL;
 }
@@ -53,6 +53,7 @@ static int	init_forks(t_table *table)
 {
 	int	i;
 
+	table->forks_init_count = 0;
 	i = 0;
 	while (i < table->philo_count)
 	{
@@ -86,17 +87,15 @@ int	init_table(t_table *table)
 {
 	if (!table)
 		return (error_msg("internal error - init_table()"));
-	table->print_mtx_inited = 0;
-	table->state_mtx_inited = 0;
-	table->forks_init_count = 0;
-	table->forks = NULL;
-	table->philos = NULL;
 	if (pthread_mutex_init(&table->print_mtx, NULL))
 		return (die_init(table, "failed to init print_mtx"));
 	table->print_mtx_inited = 1;
 	if (pthread_mutex_init(&table->state_mtx, NULL))
 		return (die_init(table, "failed to init state_mtx"));
 	table->state_mtx_inited = 1;
+	if (pthread_mutex_init(&table->stop_mtx, NULL))
+		return (die_init(table, "failed to init stop_mtx"));
+	table->stop_mtx_inited = 1;
 	table->forks = malloc(table->philo_count * sizeof(pthread_mutex_t));
 	if (!table->forks)
 		return (die_init(table, "failed to malloc forks"));

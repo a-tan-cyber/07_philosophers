@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:42:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/05 19:13:29 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 22:15:27 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,28 @@ static int	end_unlock(t_table *table, int *ended, int rc)
 
 static int	stop_unlock(t_table *table, int *ended, int rc)
 {
-	table->stop = 1;
+	if (set_stop(table, 1))
+	{
+		fatal_stop_no_lock(table);
+		rc = 1;
+	}
 	*ended = 1;
 	return (unlock_both_return(table, rc));
 }
 
 static int	death_unlock(t_table *table, int *ended, t_philo *dead, long now)
 {
-	table->stop = 1;
+	int	rc;
+
+	rc = 0;
+	if (set_stop(table, 1))
+	{
+		fatal_stop_no_lock(table);
+		rc = 1;
+	}
 	*ended = 1;
 	printf("%ld %d died\n", now - table->start_ms, dead->id);
-	return (unlock_both_return(table, 0));
+	return (unlock_both_return(table, rc));
 }
 
 static int	monitor_once(t_table *table, int *ended)
@@ -41,15 +52,13 @@ static int	monitor_once(t_table *table, int *ended)
 	long	now;
 	t_philo	*dead;
 	int		full;
+	int		stop;
 
-	if (!table || !ended)
-		return (1);
-	*ended = 0;
-	dead = NULL;
-	full = 0;
 	if (lock_print_state(table))
 		return (1);
-	if (table->stop)
+	if (get_stop(table, &stop))
+		return (stop_unlock(table, ended, 1));
+	if (stop)
 		return (end_unlock(table, ended, 0));
 	if (now_ms(&now))
 		return (stop_unlock(table, ended, 1));

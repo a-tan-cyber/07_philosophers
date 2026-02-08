@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 17:58:24 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 21:13:57 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,11 @@ typedef struct s_table
 	int				forks_init_count;
 	int				print_mtx_inited;
 	int				state_mtx_inited;
+	int				stop_mtx_inited;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mtx;
 	pthread_mutex_t	state_mtx;
+	pthread_mutex_t	stop_mtx;
 	t_philo			*philos;
 }	t_table;
 

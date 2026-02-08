@@ -6,17 +6,20 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 18:21:57 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 21:39:27 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+#include <string.h>
 
 int	main(int argc, char **argv)
 {
 	t_table	table;
 	int		rc;
 
+	memset(&table, 0, sizeof(table));
 	if (parse_args(&table, argc, argv))
 		return (1);
 	rc = 0;

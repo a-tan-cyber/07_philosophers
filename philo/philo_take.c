@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:05:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 18:11:40 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:09:59 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 static void	pick_fork_order(t_philo *philo,
 				pthread_mutex_t **first, pthread_mutex_t **second)
 {
-	if (philo->id % 2 == 0)
-	{
-		*first = philo->right_fork;
-		*second = philo->left_fork;
-	}
-	else
+	if (philo->left_fork < philo->right_fork)
 	{
 		*first = philo->left_fork;
 		*second = philo->right_fork;
+	}
+	else
+	{
+		*first = philo->right_fork;
+		*second = philo->left_fork;
 	}
 }
 

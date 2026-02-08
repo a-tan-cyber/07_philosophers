@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 18:09:17 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 19:11:06 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ static int	sleep_think(t_philo *philo)
 		return (fatal_return(table));
 	if (print_state(philo, "is thinking"))
 		return (fatal_return(table));
+	if (table->philo_count % 2 == 1)
+		usleep(1000);
 	return (0);
 }
 

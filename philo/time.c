@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/07 09:24:42 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/08 20:53:49 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int	pick_sleep_us(long remaining_ms)
 		return (1000);
 	if (remaining_ms == 1)
 		return (500);
-	return (0);
+	return (100);
 }
 
 int	ms_sleep(t_table *table, long ms)
@@ -65,7 +65,7 @@ int	ms_sleep(t_table *table, long ms)
 	{
 		if (get_stop(table, &stop))
 			return (1);
-		if (stop == 1)
+		if (stop)
 			return (0);
 		if (now_ms(&now))
 			return (1);
