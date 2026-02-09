@@ -3,47 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:42:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 23:26:24 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/09 16:59:04 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-#include <stdio.h>
-
-static int	end_unlock(t_table *table, int *ended, int rc)
-{
-	*ended = 1;
-	return (unlock_both_return(table, rc));
-}
-
-static int	stop_unlock(t_table *table, int *ended, int rc)
-{
-	if (set_stop(table, 1))
-	{
-		fatal_stop_no_lock(table);
-		rc = 1;
-	}
-	*ended = 1;
-	return (unlock_both_return(table, rc));
-}
-
-static int	death_unlock(t_table *table, int *ended, t_philo *dead, long now)
+static int	scan_state(t_table *table, long now,
+			t_philo **out_dead, int *out_full)
 {
 	int	rc;
 
 	rc = 0;
-	if (set_stop(table, 1))
-	{
-		fatal_stop_no_lock(table);
+	*out_dead = NULL;
+	*out_full = 0;
+	if (pthread_mutex_lock(&table->state_mtx))
+		return (1);
+	if (monitor_find_dead_locked(table, out_dead, now))
 		rc = 1;
-	}
+	if (!rc && table->must_eat_enabled)
+		rc = monitor_all_full_locked(table, out_full);
+	if (pthread_mutex_unlock(&table->state_mtx))
+		rc = 1;
+	return (rc);
+}
+
+static int	end_dead(int *ended, t_philo *dead)
+{
 	*ended = 1;
-	printf("%ld %d died\n", now - table->start_ms, dead->id);
-	return (unlock_both_return(table, rc));
+	return (print_death(dead));
+}
+
+static int	end_full(t_table *table, int *ended)
+{
+	*ended = 1;
+	if (set_stop(table, 1))
+		return (fatal_return(table));
+	return (0);
 }
 
 static int	monitor_once(t_table *table, int *ended)
@@ -53,23 +52,22 @@ static int	monitor_once(t_table *table, int *ended)
 	int		full;
 	int		stop;
 
-	if (lock_print_state(table))
-		return (1);
+	*ended = 0;
 	if (get_stop(table, &stop))
-		return (stop_unlock(table, ended, 1));
+		return (fatal_return(table));
 	if (stop)
-		return (end_unlock(table, ended, 0));
+		return (end_full(table, ended));
 	if (now_ms(&now))
-		return (stop_unlock(table, ended, 1));
-	if (monitor_find_dead_locked(table, &dead, now))
-		return (stop_unlock(table, ended, 1));
+		return (fatal_return(table));
+	if (scan_state(table, now, &dead, &full))
+		return (fatal_return(table));
 	if (dead)
-		return (death_unlock(table, ended, dead, now));
-	if (table->must_eat_enabled && monitor_all_full_locked(table, &full))
-		return (stop_unlock(table, ended, 1));
-	if (table->must_eat_enabled && full)
-		return (stop_unlock(table, ended, 0));
-	return (unlock_both_return(table, 0));
+		return (end_dead(ended, dead));
+	if (full)
+		return (end_full(table, ended));
+	if (monitor_idle_sleep(table))
+		return (fatal_return(table));
+	return (0);
 }
 
 int	monitor_loop(t_table *table)
@@ -82,8 +80,6 @@ int	monitor_loop(t_table *table)
 	while (!ended)
 	{
 		if (monitor_once(table, &ended))
-			return (1);
-		if (!ended && monitor_idle_sleep(table))
 			return (1);
 	}
 	return (0);

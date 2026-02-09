@@ -3,14 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   philo_routine.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/07 23:28:29 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 17:38:43 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:00:38 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	philo_single(t_philo *philo)
+{
+	t_table	*table;
+	int		locked;
+	int		rc;
+
+	if (!philo || !philo->table || !philo->left_fork)
+		return (1);
+	table = philo->table;
+	locked = 0;
+	rc = 0;
+	if (pthread_mutex_lock(philo->left_fork))
+		rc = 1;
+	else
+		locked = 1;
+	if (!rc && print_state(philo, "has taken a fork"))
+		rc = 1;
+	if (!rc && ms_sleep(table, table->time_die + 1))
+		rc = 1;
+	if (locked && pthread_mutex_unlock(philo->left_fork))
+		rc = 1;
+	if (rc)
+		fatal_stop_best_effort(table);
+	return (rc);
+}
 
 void	*philo_routine(void *arg)
 {
