@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_take.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:05:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 23:09:59 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:01:03 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,28 +45,28 @@ static int	unlock_forks_fail(t_table *table, pthread_mutex_t *first,
 int	philo_take_forks(t_philo *philo,
 		pthread_mutex_t **out_first, pthread_mutex_t **out_second)
 {
-	t_table			*table;
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;
 	int				stop;
 
-	if (!philo || !philo->table || !out_first || !out_second)
-		return (1);
-	table = philo->table;
 	pick_fork_order(philo, &first, &second);
 	*out_first = first;
 	*out_second = second;
 	if (pthread_mutex_lock(first))
-		return (unlock_forks_fail(table, NULL, NULL, 1));
+		return (unlock_forks_fail(philo->table, NULL, NULL, 1));
 	if (print_state(philo, "has taken a fork"))
-		return (unlock_forks_fail(table, first, NULL, 1));
-	if (get_stop(table, &stop))
-		return (unlock_forks_fail(table, first, NULL, 1));
+		return (unlock_forks_fail(philo->table, first, NULL, 1));
+	if (get_stop(philo->table, &stop))
+		return (unlock_forks_fail(philo->table, first, NULL, 1));
 	if (stop)
-		return (unlock_forks_fail(table, first, NULL, 0));
+		return (unlock_forks_fail(philo->table, first, NULL, 0));
 	if (pthread_mutex_lock(second))
-		return (unlock_forks_fail(table, first, NULL, 1));
+		return (unlock_forks_fail(philo->table, first, NULL, 1));
 	if (print_state(philo, "has taken a fork"))
-		return (unlock_forks_fail(table, first, second, 1));
+		return (unlock_forks_fail(philo->table, first, second, 1));
+	if (get_stop(philo->table, &stop))
+		return (unlock_forks_fail(philo->table, first, second, 1));
+	if (stop)
+		return (unlock_forks_fail(philo->table, first, second, 0));
 	return (0);
 }

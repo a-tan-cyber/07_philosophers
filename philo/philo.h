@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amtan <amtan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/08 23:22:18 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:01:26 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,6 @@ int		monitor_idle_sleep(t_table *table);
 
 /* philo_routine.c */
 void	*philo_routine(void *arg);
-
-/* philo_single.c */
-int		philo_single(t_philo *philo);
 
 /* philo_loop.c */
 void	philo_loop(t_philo *philo);

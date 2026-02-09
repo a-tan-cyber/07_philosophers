@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amtan <amtan@student.42.fr>                +#+  +:+       +#+         #
+#    By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/27 23:17:02 by amtan             #+#    #+#              #
-#    Updated: 2026/02/08 23:24:48 by amtan            ###   ########.fr        #
+#    Updated: 2026/02/09 16:58:54 by amtan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,8 @@ CFLAGS	+=	-pthread
 
 SRCS	:=	main.c parse.c utils.c init.c time.c state.c log.c simulation.c \
 				monitor.c monitor_lock.c monitor_checks.c monitor_wait.c \
-				philo_routine.c philo_single.c philo_loop.c philo_take.c \
-				philo_eat.c fatal.c 
+				philo_routine.c philo_loop.c philo_take.c philo_eat.c \
+				fatal.c 
 				
 OBJS	:=	$(SRCS:.c=.o)
 
