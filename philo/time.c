@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/09 17:02:15 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/10 18:57:55 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ static int	pick_sleep_us(long remaining_ms)
 {
 	if (remaining_ms >= 20)
 		return (2000);
-	if (remaining_ms >= 5)
-		return (1000);
 	if (remaining_ms >= 2)
 		return (1000);
 	if (remaining_ms == 1)
