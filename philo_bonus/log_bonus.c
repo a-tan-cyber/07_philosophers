@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   log.c                                              :+:      :+:    :+:   */
+/*   log_bonus.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 22:27:56 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 19:16:23 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/10 19:24:51 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 #include <errno.h>
 #include <unistd.h>
@@ -87,47 +87,25 @@ static int	write_line(long ts, int id, const char *msg)
 
 int	print_state(t_philo *philo, const char *msg)
 {
-	t_table	*table;
-	long	ts;
-	int		stop;
+	long	now;
 	int		rc;
 
 	if (!philo || !philo->table || !msg)
 		return (1);
-	table = philo->table;
-	if (since_start_ms(table, &ts))
+	if (now_ms(&now))
 		return (1);
-	if (pthread_mutex_lock(&table->print_mtx))
+	if (sem_wait(philo->table->sem_print))
 		return (1);
-	rc = get_stop(table, &stop);
-	if (!rc && !stop)
-		rc = write_line(ts, philo->id, msg);
-	if (pthread_mutex_unlock(&table->print_mtx))
-		return (1);
-	if (rc)
-		fatal_stop_best_effort(table);
+	rc = write_line(now - philo->table->start_ms, philo->id, msg);
+	if (sem_post(philo->table->sem_print))
+		rc = 1;
 	return (rc);
 }
 
-int	print_death(t_philo *philo)
+int	print_death(t_philo *philo, long now)
 {
-	t_table	*table;
-	long	now;
-	int		rc;
-
 	if (!philo || !philo->table)
 		return (1);
-	table = philo->table;
-	if (now_ms(&now))
-		return (fatal_return(table));
-	if (pthread_mutex_lock(&table->print_mtx))
-		return (fatal_return(table));
-	rc = set_stop(table, 1);
-	if (!rc)
-		rc = write_line(now - table->start_ms, philo->id, "died");
-	if (pthread_mutex_unlock(&table->print_mtx))
-		return (fatal_return_no_lock(table));
-	if (rc)
-		fatal_stop_best_effort(table);
-	return (rc);
+	sem_wait(philo->table->sem_print);
+	return (write_line(now - philo->table->start_ms, philo->id, "died"));
 }
