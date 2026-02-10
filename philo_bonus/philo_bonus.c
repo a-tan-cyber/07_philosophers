@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 19:58:01 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/10 23:40:04 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+
+static int	read_state(t_philo *philo, long *last, int *done)
+{
+	if (sem_wait_retry(philo->table->sem_state))
+		return (1);
+	*last = philo->last_meal_ms;
+	*done = philo->done;
+	if (sem_post(philo->table->sem_state))
+		return (1);
+	return (0);
+}
 
 static void	*monitor_thread(void *arg)
 {
@@ -27,17 +38,14 @@ static void	*monitor_thread(void *arg)
 	{
 		if (now_ms(&now))
 			exit(1);
-		if (sem_wait(philo->table->sem_state))
-			exit(1);
-		last = philo->last_meal_ms;
-		done = philo->done;
-		if (sem_post(philo->table->sem_state))
+		if (read_state(philo, &last, &done))
 			exit(1);
 		if (done)
-			return (0);
+			return (NULL);
 		if (now - last >= philo->table->time_die)
 		{
-			print_death(philo, now);
+			if (print_death(philo, now))
+				exit(1);
 			exit(1);
 		}
 		usleep(1000);
@@ -46,10 +54,14 @@ static void	*monitor_thread(void *arg)
 
 static void	run_single(t_philo *philo)
 {
-	sem_wait(philo->table->sem_forks);
-	print_state(philo, "has taken a fork");
-	ms_sleep(philo->table->time_die + 1);
+	if (sem_wait_retry(philo->table->sem_forks))
+		exit(1);
+	if (print_state(philo, "has taken a fork"))
+		exit(1);
+	while (1)
+		usleep(1000);
 }
+
 
 static void	philo_loop(t_philo *philo)
 {
@@ -61,7 +73,7 @@ static void	philo_loop(t_philo *philo)
 	{
 		if (take_forks(philo) || eat_step(philo) || put_forks(philo))
 			exit(1);
-		if (sem_wait(philo->table->sem_state))
+		if (sem_wait_retry(philo->table->sem_state))
 			exit(1);
 		done = philo->done;
 		if (sem_post(philo->table->sem_state))
