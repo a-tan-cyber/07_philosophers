@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 21:45:28 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/09 17:01:46 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/10 17:55:09 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,19 @@ static int	init_start_state(t_table *table)
 	if (now_ms(&start))
 		return (1);
 	table->start_ms = start;
+	if (pthread_mutex_lock(&table->state_mtx))
+		return (1);
 	i = 0;
 	while (i < table->philo_count)
 	{
 		table->philos[i].last_meal_ms = start;
+		table->philos[i].meals_eaten = 0;
 		i++;
 	}
 	table->stop = 0;
 	table->fatal = 0;
+	if (pthread_mutex_unlock(&table->state_mtx))
+		return (1);
 	return (0);
 }
 
