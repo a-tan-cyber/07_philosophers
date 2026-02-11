@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 19:16:09 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/11 16:46:21 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ int		fatal_return_no_lock(t_table *table);
 /* log.c */
 int		print_state(t_philo *philo, const char *msg);
 int		print_death(t_philo *philo);
+int		write_line(long ts, int id, const char *msg);
 
 /* utils.c */
 int		error_msg(const char *msg);

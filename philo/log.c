@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 22:27:56 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 19:16:23 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/11 16:37:54 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	append_str(char *buf, int *i, const char *s)
 	return (0);
 }
 
-static int	write_line(long ts, int id, const char *msg)
+int	write_line(long ts, int id, const char *msg)
 {
 	char	buf[128];
 	int		i;

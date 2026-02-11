@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:42:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 17:50:55 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/11 16:51:28 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static int	monitor_eval_locked(t_table *table, long now, int *ended)
 {
 	t_philo	*dead;
 	int		full;
+	int		rc;
 
 	dead = NULL;
 	full = 0;
@@ -38,18 +39,19 @@ static int	monitor_eval_locked(t_table *table, long now, int *ended)
 		return (1);
 	if (table->must_eat_enabled && monitor_all_full_locked(table, &full))
 		return (1);
+	rc = 0;
 	if (dead)
 	{
 		table->stop = 1;
 		*ended = 1;
-		printf("%ld %d died\n", now - table->start_ms, dead->id);
+		rc = write_line(now - table->start_ms, dead->id, "died");
 	}
 	if (table->must_eat_enabled && full)
 	{
 		table->stop = 1;
 		*ended = 1;
 	}
-	return (0);
+	return (rc);
 }
 
 static int	monitor_once(t_table *table, int *ended)
