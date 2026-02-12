@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 22:41:56 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 15:56:51 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		ms_sleep(long ms);
 
 /* log_bonus.c */
 int		print_state(t_philo *philo, const char *msg);
-int		print_death(t_philo *philo, long now);
+int		print_death(t_philo *philo);
 
 /* philo_bonus.c */
 void	philo_process(t_table *table, int id);

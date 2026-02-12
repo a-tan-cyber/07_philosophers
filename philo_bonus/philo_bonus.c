@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 23:40:04 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 15:56:49 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void	*monitor_thread(void *arg)
 			return (NULL);
 		if (now - last >= philo->table->time_die)
 		{
-			if (print_death(philo, now))
+			if (print_death(philo))
 				exit(1);
 			exit(1);
 		}

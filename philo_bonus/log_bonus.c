@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 22:27:56 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 22:43:35 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 15:56:47 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,21 +92,29 @@ int	print_state(t_philo *philo, const char *msg)
 
 	if (!philo || !philo->table || !msg)
 		return (1);
-	if (now_ms(&now))
-		return (1);
 	if (sem_wait_retry(philo->table->sem_print))
 		return (1);
+	if (now_ms(&now))
+	{
+		sem_post(philo->table->sem_print);
+		return (1);
+	}
 	rc = write_line(now - philo->table->start_ms, philo->id, msg);
 	if (sem_post(philo->table->sem_print))
 		rc = 1;
 	return (rc);
 }
 
-int	print_death(t_philo *philo, long now)
+int	print_death(t_philo *philo)
 {
+	long	now;
+
 	if (!philo || !philo->table)
 		return (1);
 	if (sem_wait_retry(philo->table->sem_print))
 		return (1);
+	if (now_ms(&now))
+		return (1);
 	return (write_line(now - philo->table->start_ms, philo->id, "died"));
 }
+	

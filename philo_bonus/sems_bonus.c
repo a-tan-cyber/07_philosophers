@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:05:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 23:15:34 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 15:56:52 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,10 @@ int	sems_open(t_table *table)
 	table->sem_room = sem_open(SEM_ROOM, O_CREAT, 0644, room);
 	if (table->sem_forks == SEM_FAILED || table->sem_print == SEM_FAILED
 		|| table->sem_state == SEM_FAILED || table->sem_room == SEM_FAILED)
+	{
+		sems_close_unlink(table);
 		return (1);
+	}
 	return (0);
 }
 
