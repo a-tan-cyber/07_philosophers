@@ -6,13 +6,11 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:42:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/11 16:51:28 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 22:23:56 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-#include <stdio.h>
 
 static int	end_unlock(t_table *table, int *ended, int rc)
 {

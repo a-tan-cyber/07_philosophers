@@ -6,7 +6,7 @@
 #    By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/27 23:17:02 by amtan             #+#    #+#              #
-#    Updated: 2026/02/10 18:27:47 by amtan            ###   ########.fr        #
+#    Updated: 2026/02/12 21:22:00 by amtan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ CFLAGS	+=	-pthread
 SRCS	:=	main_bonus.c \
 		  parse_bonus.c \
 		  sems_bonus.c \
+		  state_sem_bonus.c \
 		  time_bonus.c \
 		  log_bonus.c \
 		  philo_bonus.c \

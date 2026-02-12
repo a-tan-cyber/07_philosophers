@@ -6,12 +6,13 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 16:51:49 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 21:23:02 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+#include <semaphore.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -67,7 +68,6 @@ static void	run_single(t_philo *philo)
 		usleep(1000);
 }
 
-
 static void	philo_loop(t_philo *philo)
 {
 	int	done;
@@ -76,6 +76,13 @@ static void	philo_loop(t_philo *philo)
 		usleep(1000);
 	while (1)
 	{
+		if (sem_wait_retry(philo->table->sem_state))
+			exit(1);
+		done = philo->done;
+		if (sem_post(philo->table->sem_state))
+			exit(1);
+		if (done)
+			exit(0);
 		if (take_forks(philo) || eat_step(philo) || put_forks(philo))
 			exit(1);
 		if (sem_wait_retry(philo->table->sem_state))
@@ -94,6 +101,7 @@ void	philo_process(t_table *table, int id)
 {
 	t_philo	philo;
 
+	sem_state_child_init(table, id);
 	philo.table = table;
 	philo.id = id;
 	philo.meals = 0;

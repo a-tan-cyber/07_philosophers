@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 15:56:51 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 21:21:42 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,9 @@ int		parse_args(t_table *table, int argc, char **argv);
 int		sems_open(t_table *table);
 void	sems_close_unlink(t_table *table);
 int		sem_wait_retry(sem_t *sem);
+
+/* state_sem_bonus.c */
+void	sem_state_child_init(t_table *table, int id);
 
 /* time_bonus.c */
 int		now_ms(long *out);

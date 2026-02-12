@@ -6,16 +6,31 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 19:36:40 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 22:15:26 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+#include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+static void	reap_n(int n)
+{
+	while (n > 0)
+	{
+		if (waitpid(-1, 0, 0) < 0)
+		{
+			if (errno == EINTR)
+				continue ;
+			break ;
+		}
+		n--;
+	}
+}
 
 static void	kill_all(pid_t *pids, int count)
 {
@@ -41,12 +56,15 @@ static int	wait_children(pid_t *pids, int count)
 	{
 		pid = waitpid(-1, &status, 0);
 		if (pid < 0)
+		{
+			if (errno == EINTR)
+				continue ;
 			return (1);
+		}
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
 		{
 			kill_all(pids, count);
-			while (++i < count)
-				waitpid(-1, 0, 0);
+			reap_n(count - (i + 1));
 			return (1);
 		}
 		i++;
@@ -64,7 +82,11 @@ static int	fork_all(t_table *table, pid_t *pids)
 	{
 		pid = fork();
 		if (pid < 0)
+		{
+			kill_all(pids, i);
+			reap_n(i);
 			return (1);
+		}
 		if (pid == 0)
 			philo_process(table, i + 1);
 		pids[i] = pid;

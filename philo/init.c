@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 14:40:58 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 17:46:52 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 17:19:22 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@ void	destroy_all(t_table *table)
 	if (table->state_mtx_inited)
 		pthread_mutex_destroy(&table->state_mtx);
 	table->state_mtx_inited = 0;
+	if (table->waiter_mtx_inited)
+		pthread_mutex_destroy(&table->waiter_mtx);
+	table->waiter_mtx_inited = 0;
 	free(table->philos);
 	table->philos = NULL;
 }
@@ -90,6 +93,9 @@ int	init_table(t_table *table)
 	if (pthread_mutex_init(&table->state_mtx, NULL))
 		return (die_init(table, "failed to init state_mtx"));
 	table->state_mtx_inited = 1;
+	if (pthread_mutex_init(&table->waiter_mtx, NULL))
+		return (die_init(table, "failed to init waiter_mtx"));
+	table->waiter_mtx_inited = 1;
 	table->forks = malloc(table->philo_count * sizeof(pthread_mutex_t));
 	if (!table->forks)
 		return (die_init(table, "failed to malloc forks"));
