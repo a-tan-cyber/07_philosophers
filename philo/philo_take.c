@@ -6,25 +6,25 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:05:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/09 17:01:03 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 16:18:07 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	pick_fork_order(t_philo *philo,
-				pthread_mutex_t **first, pthread_mutex_t **second)
+static void pick_fork_order(t_philo *philo,
+        pthread_mutex_t **first, pthread_mutex_t **second)
 {
-	if (philo->left_fork < philo->right_fork)
-	{
-		*first = philo->left_fork;
-		*second = philo->right_fork;
-	}
-	else
-	{
-		*first = philo->right_fork;
-		*second = philo->left_fork;
-	}
+    if (philo->id % 2 == 0)
+    {
+        *first = philo->right_fork;
+        *second = philo->left_fork;
+    }
+    else
+    {
+        *first = philo->left_fork;
+        *second = philo->right_fork;
+    }
 }
 
 static int	unlock_forks_fail(t_table *table, pthread_mutex_t *first,
