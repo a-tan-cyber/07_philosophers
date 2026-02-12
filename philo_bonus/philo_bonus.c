@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 15:56:49 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/12 16:51:49 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,39 +15,44 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static int	read_state(t_philo *philo, long *last, int *done)
+static int	monitor_loop(t_philo *philo, long *last, int *done)
 {
+	long	now;
+
+	if (now_ms(&now))
+		exit(1);
 	if (sem_wait_retry(philo->table->sem_state))
-		return (1);
+		exit(1);
 	*last = philo->last_meal_ms;
 	*done = philo->done;
-	if (sem_post(philo->table->sem_state))
+	if (*done)
+	{
+		if (sem_post(philo->table->sem_state))
+			exit(1);
 		return (1);
+	}
+	if (now - *last >= philo->table->time_die)
+	{
+		print_death(philo);
+		sem_post(philo->table->sem_state);
+		exit(1);
+	}
+	if (sem_post(philo->table->sem_state))
+		exit(1);
 	return (0);
 }
 
 static void	*monitor_thread(void *arg)
 {
 	t_philo	*philo;
-	long	now;
 	long	last;
 	int		done;
 
 	philo = (t_philo *)arg;
 	while (1)
 	{
-		if (now_ms(&now))
-			exit(1);
-		if (read_state(philo, &last, &done))
-			exit(1);
-		if (done)
+		if (monitor_loop(philo, &last, &done))
 			return (NULL);
-		if (now - last >= philo->table->time_die)
-		{
-			if (print_death(philo))
-				exit(1);
-			exit(1);
-		}
 		usleep(1000);
 	}
 }
