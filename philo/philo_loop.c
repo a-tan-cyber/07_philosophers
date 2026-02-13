@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:40:03 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 20:42:50 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/13 19:17:08 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	unlock_forks(t_table *table,
 static int	sleep_think(t_philo *philo)
 {
 	t_table	*table;
+	long	think;
 
 	table = philo->table;
 	if (print_state(philo, "is sleeping"))
@@ -49,8 +50,16 @@ static int	sleep_think(t_philo *philo)
 		return (fatal_return(table));
 	if (print_state(philo, "is thinking"))
 		return (fatal_return(table));
+	think = 0;
 	if (table->philo_count % 2 == 1)
-		usleep(1000);
+	{
+		think = table->time_die - (table->time_eat + table->time_sleep);
+		if (think > table->time_eat)
+			think = table->time_eat;
+		if (think > 0)
+			if (ms_sleep(table, think))
+				return (fatal_return(table));
+	}
 	return (0);
 }
 

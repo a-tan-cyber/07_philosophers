@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 17:18:13 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/13 17:31:15 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_table
 	long			start_ms;
 	int				stop;
 	int				fatal;
+	int				room;
 	int				forks_init_count;
 	int				print_mtx_inited;
 	int				state_mtx_inited;

@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 14:40:58 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 17:19:22 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/13 17:33:45 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,10 @@ int	init_table(t_table *table)
 	if (pthread_mutex_init(&table->waiter_mtx, NULL))
 		return (die_init(table, "failed to init waiter_mtx"));
 	table->waiter_mtx_inited = 1;
+	if (table->philo_count > 1)
+		table->room = table->philo_count - 1;
+	else
+		table->room = 0;
 	table->forks = malloc(table->philo_count * sizeof(pthread_mutex_t));
 	if (!table->forks)
 		return (die_init(table, "failed to malloc forks"));
