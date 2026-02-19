@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 22:27:56 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/11 16:37:54 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:51:38 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,36 @@
 #include <errno.h>
 #include <unistd.h>
 
+static int	fill_digits_rev(char *tmp, long n)
+{
+	int	len;
+
+	if (n < 0)
+		n = 0;
+	len = 0;
+	if (n == 0)
+	{
+		tmp[len] = '0';
+		len++;
+		return (len);
+	}
+	while (n > 0)
+	{
+		tmp[len] = (char)('0' + (n % 10));
+		n /= 10;
+		len++;
+	}
+	return (len);
+}
+
 static int	append_num(char *buf, int *i, long n)
 {
 	char	tmp[32];
 	int		j;
+	int		len;
 
-	j = 0;
-	if (n == 0)
-	{
-		tmp[j] = '0';
-		j++;
-	}
-	while (n > 0)
-	{
-		tmp[j] = (char)('0' + (n % 10));
-		n /= 10;
-		j++;
-	}
-	j--;
+	len = fill_digits_rev(tmp, n);
+	j = len - 1;
 	while (j >= 0)
 	{
 		buf[*i] = tmp[j];
@@ -95,38 +107,17 @@ int	print_state(t_philo *philo, const char *msg)
 	if (!philo || !philo->table || !msg)
 		return (1);
 	table = philo->table;
-	if (since_start_ms(table, &ts))
-		return (1);
 	if (pthread_mutex_lock(&table->print_mtx))
 		return (1);
 	rc = get_stop(table, &stop);
 	if (!rc && !stop)
-		rc = write_line(ts, philo->id, msg);
+	{
+		rc = since_start_ms(table, &ts);
+		if (!rc)
+			rc = write_line(ts, philo->id, msg);
+	}
 	if (pthread_mutex_unlock(&table->print_mtx))
 		return (1);
-	if (rc)
-		fatal_stop_best_effort(table);
-	return (rc);
-}
-
-int	print_death(t_philo *philo)
-{
-	t_table	*table;
-	long	now;
-	int		rc;
-
-	if (!philo || !philo->table)
-		return (1);
-	table = philo->table;
-	if (now_ms(&now))
-		return (fatal_return(table));
-	if (pthread_mutex_lock(&table->print_mtx))
-		return (fatal_return(table));
-	rc = set_stop(table, 1);
-	if (!rc)
-		rc = write_line(now - table->start_ms, philo->id, "died");
-	if (pthread_mutex_unlock(&table->print_mtx))
-		return (fatal_return_no_lock(table));
 	if (rc)
 		fatal_stop_best_effort(table);
 	return (rc);

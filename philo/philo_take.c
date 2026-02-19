@@ -6,93 +6,93 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 17:05:27 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/13 18:19:43 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:37:56 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-#include <unistd.h>
-
-static int	room_take(t_table *table)
+static int	unlock_both(t_table *table, pthread_mutex_t *a, pthread_mutex_t *b)
 {
-	int	stop;
+	int	rc;
 
-	while (1)
+	rc = 0;
+	if (b && pthread_mutex_unlock(b))
+		rc = 1;
+	if (a && pthread_mutex_unlock(a))
+		rc = 1;
+	if (rc)
+		fatal_stop_best_effort(table);
+	return (rc);
+}
+
+static void	pick_order(t_philo *philo,
+		pthread_mutex_t **first, pthread_mutex_t **second)
+{
+	if (philo->id % 2 == 0)
 	{
-		if (get_stop(table, &stop))
-			return (fatal_return(table));
-		if (stop)
-			return (1);
-		if (pthread_mutex_lock(&table->waiter_mtx))
-			return (fatal_return(table));
-		if (table->room > 0)
-		{
-			table->room--;
-			if (pthread_mutex_unlock(&table->waiter_mtx))
-				return (fatal_return(table));
-			return (0);
-		}
-		if (pthread_mutex_unlock(&table->waiter_mtx))
-			return (fatal_return(table));
-		usleep(200);
+		*first = philo->right_fork;
+		*second = philo->left_fork;
+	}
+	else
+	{
+		*first = philo->left_fork;
+		*second = philo->right_fork;
 	}
 }
 
-static int	unlock_forks_fail(t_table *table, pthread_mutex_t *first,
-				pthread_mutex_t *second, int fatal)
+static int	lock_first(t_philo *philo, pthread_mutex_t *first)
 {
-	int	unlock_failed;
+	t_table	*table;
+	int		stop;
 
-	unlock_failed = 0;
-	if (second && pthread_mutex_unlock(second))
-		unlock_failed = 1;
-	if (first && pthread_mutex_unlock(first))
-		unlock_failed = 1;
-	if (fatal || unlock_failed)
-		fatal_stop_best_effort(table);
-	return (1);
-}
-
-static int	unlock_forks_fail_waiter(t_table *table, pthread_mutex_t *first,
-				pthread_mutex_t *second, int fatal)
-{
-	int	lock_failed;
-
-	lock_failed = pthread_mutex_lock(&table->waiter_mtx);
-	if (lock_failed)
-		fatal = 1;
-	else
-		table->room++;
-	if (!lock_failed && pthread_mutex_unlock(&table->waiter_mtx))
-		fatal = 1;
-	return (unlock_forks_fail(table, first, second, fatal));
-}
-
-static int	take_fork_checked(t_philo *philo, pthread_mutex_t *fork,
-				pthread_mutex_t **held)
-{
-	int	stop;
-
-	if (pthread_mutex_lock(fork))
-		return (unlock_forks_fail_waiter(philo->table, held[0], held[1], 1));
-	if (!held[0])
-		held[0] = fork;
-	else
-		held[1] = fork;
-	if (print_state(philo, "has taken a fork"))
-		return (unlock_forks_fail_waiter(philo->table, held[0], held[1], 1));
-	if (get_stop(philo->table, &stop))
-		return (unlock_forks_fail_waiter(philo->table, held[0], held[1], 1));
-	if (stop)
-		return (unlock_forks_fail_waiter(philo->table, held[0], held[1], 0));
-	if (held[1])
+	table = philo->table;
+	if (pthread_mutex_lock(first))
+		return (fatal_return(table));
+	if (get_stop(table, &stop))
 	{
-		if (pthread_mutex_lock(&philo->table->waiter_mtx))
-			return (unlock_forks_fail(philo->table, held[0], held[1], 1));
-		philo->table->room++;
-		if (pthread_mutex_unlock(&philo->table->waiter_mtx))
-			return (unlock_forks_fail(philo->table, held[0], held[1], 1));
+		pthread_mutex_unlock(first);
+		return (fatal_return(table));
+	}
+	if (stop)
+	{
+		pthread_mutex_unlock(first);
+		return (1);
+	}
+	if (print_state(philo, "has taken a fork"))
+	{
+		pthread_mutex_unlock(first);
+		return (fatal_return(table));
+	}
+	return (0);
+}
+
+static int	lock_second(t_philo *philo,
+		pthread_mutex_t *first, pthread_mutex_t *second)
+{
+	t_table	*table;
+	int		stop;
+
+	table = philo->table;
+	if (pthread_mutex_lock(second))
+	{
+		pthread_mutex_unlock(first);
+		return (fatal_return(table));
+	}
+	if (get_stop(table, &stop))
+	{
+		unlock_both(table, first, second);
+		return (fatal_return(table));
+	}
+	if (stop)
+	{
+		unlock_both(table, first, second);
+		return (1);
+	}
+	if (print_state(philo, "has taken a fork"))
+	{
+		unlock_both(table, first, second);
+		return (fatal_return(table));
 	}
 	return (0);
 }
@@ -100,26 +100,22 @@ static int	take_fork_checked(t_philo *philo, pthread_mutex_t *fork,
 int	philo_take_forks(t_philo *philo,
 		pthread_mutex_t **out_first, pthread_mutex_t **out_second)
 {
-	pthread_mutex_t	*held[2];
+	t_table			*table;
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;
+	int				stop;
 
-	held[0] = NULL;
-	held[1] = NULL;
-	first = philo->left_fork;
-	second = philo->right_fork;
-	if (philo->id % 2 == 0)
-	{
-		first = philo->right_fork;
-		second = philo->left_fork;
-	}
+	if (!philo || !philo->table || !out_first || !out_second)
+		return (1);
+	table = philo->table;
+	if (get_stop(table, &stop))
+		return (fatal_return(table));
+	if (stop)
+		return (1);
+	pick_order(philo, &first, &second);
 	*out_first = first;
 	*out_second = second;
-	if (room_take(philo->table))
+	if (lock_first(philo, first))
 		return (1);
-	if (take_fork_checked(philo, first, held))
-		return (1);
-	if (take_fork_checked(philo, second, held))
-		return (1);
-	return (0);
+	return (lock_second(philo, first, second));
 }

@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/13 17:31:15 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:36:16 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	long			last_meal_ms;
 	int				meals_eaten;
+	unsigned int	think_phase;
 	t_table			*table;
 }	t_philo;
 
@@ -39,17 +40,28 @@ typedef struct s_table
 	long			start_ms;
 	int				stop;
 	int				fatal;
-	int				room;
 	int				forks_init_count;
 	int				print_mtx_inited;
+	int				stop_mtx_inited;
 	int				state_mtx_inited;
-	int				waiter_mtx_inited;
+	int				start_mtx_inited;
+	int				ready_mtx_inited;
+	int				ready_count;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mtx;
+	pthread_mutex_t	stop_mtx;
 	pthread_mutex_t	state_mtx;
-	pthread_mutex_t	waiter_mtx;
+	pthread_mutex_t	start_mtx;
+	pthread_mutex_t	ready_mtx;
 	t_philo			*philos;
 }	t_table;
+
+typedef struct s_mon_eval
+{
+	int	ended;
+	int	dead_id;
+	int	print_death;
+}	t_mon_eval;
 
 /* parse.c */
 int		parse_args(t_table *table, int argc, char **argv);
@@ -72,13 +84,12 @@ int		get_meals_eaten(t_philo *philo, int *out);
 
 /* simulation.c */
 int		start_simulation(t_table *table);
+int		sim_setup(t_table *table, int *created, int *gate_locked);
 
 /* monitor.c */
 int		monitor_loop(t_table *table);
-
-/* monitor_lock.c */
-int		lock_print_state(t_table *table);
-int		unlock_both_return(t_table *table, int rc);
+int		monitor_step(t_table *table, int *ended);
+int		monitor_eval_locked(t_table *table, long now, t_mon_eval *out);
 
 /* monitor_checks.c */
 int		monitor_find_dead_locked(t_table *table, t_philo **out_dead,
@@ -93,6 +104,10 @@ void	*philo_routine(void *arg);
 
 /* philo_loop.c */
 void	philo_loop(t_philo *philo);
+int		philo_stop_check(t_table *table, int *out_stop);
+int		philo_unlock_forks(t_table *table,
+			pthread_mutex_t *first, pthread_mutex_t *second);
+int		philo_sleep_think(t_philo *philo);
 
 /* philo_take_forks.c */
 int		philo_take_forks(t_philo *philo,
@@ -109,7 +124,6 @@ int		fatal_return_no_lock(t_table *table);
 
 /* log.c */
 int		print_state(t_philo *philo, const char *msg);
-int		print_death(t_philo *philo);
 int		write_line(long ts, int id, const char *msg);
 
 /* utils.c */

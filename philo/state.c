@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 19:44:07 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 17:55:42 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:32:04 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ int	get_stop(t_table *table, int *out)
 
 	if (!table || !out)
 		return (1);
-	if (pthread_mutex_lock(&table->state_mtx))
+	if (pthread_mutex_lock(&table->stop_mtx))
 		return (1);
 	stop = table->stop;
-	if (pthread_mutex_unlock(&table->state_mtx))
+	if (pthread_mutex_unlock(&table->stop_mtx))
 		return (1);
 	*out = stop;
 	return (0);
@@ -31,10 +31,10 @@ int	set_stop(t_table *table, int value)
 {
 	if (!table)
 		return (1);
-	if (pthread_mutex_lock(&table->state_mtx))
+	if (pthread_mutex_lock(&table->stop_mtx))
 		return (1);
 	table->stop = value;
-	if (pthread_mutex_unlock(&table->state_mtx))
+	if (pthread_mutex_unlock(&table->stop_mtx))
 		return (1);
 	return (0);
 }

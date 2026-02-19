@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 18:57:55 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:30:03 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,28 +41,23 @@ int	since_start_ms(t_table *table, long *out)
 
 static int	pick_sleep_us(long remaining_ms)
 {
-	if (remaining_ms >= 20)
+	if (remaining_ms >= 50)
 		return (2000);
-	if (remaining_ms >= 2)
+	if (remaining_ms >= 20)
 		return (1000);
-	if (remaining_ms == 1)
+	if (remaining_ms > 10)
 		return (500);
-	return (100);
+	if (remaining_ms > 2)
+		return (250);
+	return (80);
 }
 
-int	ms_sleep(t_table *table, long ms)
+static int	sleep_until(t_table *table, long deadline)
 {
 	long	now;
-	long	deadline;
+	long	remaining;
 	int		stop;
 
-	if (!table)
-		return (1);
-	if (ms <= 0)
-		return (0);
-	if (now_ms(&now))
-		return (1);
-	deadline = now + ms;
 	while (1)
 	{
 		if (get_stop(table, &stop))
@@ -73,6 +68,25 @@ int	ms_sleep(t_table *table, long ms)
 			return (1);
 		if (now >= deadline)
 			return (0);
-		usleep(pick_sleep_us(deadline - now));
+		remaining = deadline - now;
+		if (remaining <= 1)
+			usleep(50);
+		else
+			usleep(pick_sleep_us(remaining));
 	}
+}
+
+int	ms_sleep(t_table *table, long ms)
+{
+	long	now;
+	long	deadline;
+
+	if (!table)
+		return (1);
+	if (ms <= 0)
+		return (0);
+	if (now_ms(&now))
+		return (1);
+	deadline = now + ms;
+	return (sleep_until(table, deadline));
 }

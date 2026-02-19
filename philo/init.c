@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 14:40:58 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/13 17:33:45 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:52:41 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-void	destroy_all(t_table *table)
-{
-	int	i;
-
-	if (!table)
-		return ;
-	if (table->forks)
-	{
-		i = 0;
-		while (i < table->forks_init_count)
-			pthread_mutex_destroy(&table->forks[i++]);
-		free(table->forks);
-		table->forks = NULL;
-	}
-	table->forks_init_count = 0;
-	if (table->print_mtx_inited)
-		pthread_mutex_destroy(&table->print_mtx);
-	table->print_mtx_inited = 0;
-	if (table->state_mtx_inited)
-		pthread_mutex_destroy(&table->state_mtx);
-	table->state_mtx_inited = 0;
-	if (table->waiter_mtx_inited)
-		pthread_mutex_destroy(&table->waiter_mtx);
-	table->waiter_mtx_inited = 0;
-	free(table->philos);
-	table->philos = NULL;
-}
 
 static int	die_init(t_table *table, const char *msg)
 {
@@ -83,23 +55,33 @@ static void	init_philos(t_table *table)
 	}
 }
 
+static int	init_mutexes(t_table *table)
+{
+	if (pthread_mutex_init(&table->print_mtx, NULL))
+		return (die_init(table, "failed to init print_mtx"));
+	table->print_mtx_inited = 1;
+	if (pthread_mutex_init(&table->stop_mtx, NULL))
+		return (die_init(table, "failed to init stop_mtx"));
+	table->stop_mtx_inited = 1;
+	if (pthread_mutex_init(&table->state_mtx, NULL))
+		return (die_init(table, "failed to init state_mtx"));
+	table->state_mtx_inited = 1;
+	if (pthread_mutex_init(&table->start_mtx, NULL))
+		return (die_init(table, "failed to init start_mtx"));
+	table->start_mtx_inited = 1;
+	if (pthread_mutex_init(&table->ready_mtx, NULL))
+		return (die_init(table, "failed to init ready_mtx"));
+	table->ready_mtx_inited = 1;
+	table->ready_count = 0;
+	return (0);
+}
+
 int	init_table(t_table *table)
 {
 	if (!table)
 		return (error_msg("internal error - init_table()"));
-	if (pthread_mutex_init(&table->print_mtx, NULL))
-		return (die_init(table, "failed to init print_mtx"));
-	table->print_mtx_inited = 1;
-	if (pthread_mutex_init(&table->state_mtx, NULL))
-		return (die_init(table, "failed to init state_mtx"));
-	table->state_mtx_inited = 1;
-	if (pthread_mutex_init(&table->waiter_mtx, NULL))
-		return (die_init(table, "failed to init waiter_mtx"));
-	table->waiter_mtx_inited = 1;
-	if (table->philo_count > 1)
-		table->room = table->philo_count - 1;
-	else
-		table->room = 0;
+	if (init_mutexes(table))
+		return (1);
 	table->forks = malloc(table->philo_count * sizeof(pthread_mutex_t));
 	if (!table->forks)
 		return (die_init(table, "failed to malloc forks"));

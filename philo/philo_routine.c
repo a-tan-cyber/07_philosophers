@@ -6,11 +6,28 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/07 23:28:29 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/09 17:00:38 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/18 18:51:12 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	wait_start_gate(t_philo *philo)
+{
+	t_table	*table;
+
+	table = philo->table;
+	if (pthread_mutex_lock(&table->ready_mtx))
+		return (1);
+	table->ready_count++;
+	if (pthread_mutex_unlock(&table->ready_mtx))
+		return (1);
+	if (pthread_mutex_lock(&table->start_mtx))
+		return (1);
+	if (pthread_mutex_unlock(&table->start_mtx))
+		return (1);
+	return (0);
+}
 
 static int	philo_single(t_philo *philo)
 {
@@ -45,6 +62,11 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	if (!philo || !philo->table)
 		return (NULL);
+	if (wait_start_gate(philo))
+	{
+		fatal_stop_best_effort(philo->table);
+		return (NULL);
+	}
 	if (philo->table->philo_count == 1)
 		philo_single(philo);
 	else
