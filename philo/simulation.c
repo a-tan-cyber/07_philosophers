@@ -6,14 +6,14 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 21:45:28 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/19 22:33:58 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/20 14:44:27 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 static int	cleanup(t_table *table, int created, int gate_locked, int rc)
-	{
+{
 	while (created > 0)
 	{
 		created--;
