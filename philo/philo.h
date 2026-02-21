@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:19:35 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/19 22:36:16 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/20 20:15:36 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ int		parse_args(t_table *table, int argc, char **argv);
 
 /* init.c */
 int		init_table(t_table *table);
+
+/* destroy.c */
 void	destroy_all(t_table *table);
 
 /* time.c */
@@ -84,11 +86,15 @@ int		get_meals_eaten(t_philo *philo, int *out);
 
 /* simulation.c */
 int		start_simulation(t_table *table);
+
+/* simulation_setup.c */
 int		sim_setup(t_table *table, int *created, int *gate_locked);
 
 /* monitor.c */
 int		monitor_loop(t_table *table);
 int		monitor_step(t_table *table, int *ended);
+
+/* monitor_eval.c */
 int		monitor_eval_locked(t_table *table, long now, t_mon_eval *out);
 
 /* monitor_checks.c */
@@ -104,9 +110,13 @@ void	*philo_routine(void *arg);
 
 /* philo_loop.c */
 void	philo_loop(t_philo *philo);
+
+/* philo_loop_sync.c */
 int		philo_stop_check(t_table *table, int *out_stop);
 int		philo_unlock_forks(t_table *table,
 			pthread_mutex_t *first, pthread_mutex_t *second);
+
+/* philo_loop_helpers.c */
 int		philo_sleep_think(t_philo *philo);
 
 /* philo_take_forks.c */
