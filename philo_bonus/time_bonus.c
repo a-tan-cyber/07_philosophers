@@ -6,7 +6,7 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 17:44:23 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/10 18:59:43 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/23 17:55:13 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,21 +27,36 @@ int	now_ms(long *out)
 	return (0);
 }
 
+int	since_start_ms(t_table *table, long *out)
+{
+	long	now;
+
+	if (!table || !out || !table->start_ms)
+		return (1);
+	if (now_ms(&now))
+		return (1);
+	*out = now - table->start_ms;
+	return (0);
+}
+
 static int	pick_sleep_us(long remaining_ms)
 {
-	if (remaining_ms >= 10)
-		return (5000);
-	if (remaining_ms >= 2)
+	if (remaining_ms >= 50)
+		return (2000);
+	if (remaining_ms >= 20)
 		return (1000);
-	if (remaining_ms == 1)
+	if (remaining_ms > 10)
 		return (500);
-	return (100);
+	if (remaining_ms > 2)
+		return (250);
+	return (80);
 }
 
 int	ms_sleep(long ms)
 {
 	long	now;
 	long	deadline;
+	long	remaining;
 
 	if (ms <= 0)
 		return (0);
@@ -54,6 +69,10 @@ int	ms_sleep(long ms)
 			return (1);
 		if (now >= deadline)
 			return (0);
-		usleep(pick_sleep_us(deadline - now));
+		remaining = deadline - now;
+		if (remaining <= 1)
+			usleep(50);
+		else
+			usleep(pick_sleep_us(remaining));
 	}
 }

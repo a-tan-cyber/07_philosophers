@@ -1,37 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_bonus.c                                       :+:      :+:    :+:   */
+/*   simulation_fork_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/27 23:23:14 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/23 17:46:41 by amtan            ###   ########.fr       */
+/*   Created: 2026/02/21 00:00:00 by amtan             #+#    #+#             */
+/*   Updated: 2026/02/23 12:37:04 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-#include <string.h>
+#include <unistd.h>
 
-int	main(int argc, char **argv)
+int	sim_fork_children(t_table *table, int *created)
 {
-	t_table	table;
-	int		rc;
-	int		sim_rc;
+	pid_t	pid;
 
-	memset(&table, 0, sizeof(table));
-	if (parse_args(&table, argc, argv))
-		return (1);
-	rc = 0;
-	if (init_table(&table))
-		rc = 1;
-	if (!rc)
+	while (*created < table->philo_count)
 	{
-		sim_rc = start_simulation(&table);
-		if (sim_rc)
-			rc = sim_rc;
+		pid = fork();
+		if (pid < 0)
+			return (1);
+		if (pid == 0)
+			philo_process(&table->philos[*created]);
+		table->pids[*created] = pid;
+		(*created)++;
 	}
-	destroy_all(&table);
-	return (rc);
+	return (0);
 }

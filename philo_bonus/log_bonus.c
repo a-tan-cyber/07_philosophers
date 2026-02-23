@@ -6,117 +6,61 @@
 /*   By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/29 22:27:56 by amtan             #+#    #+#             */
-/*   Updated: 2026/02/12 21:11:29 by amtan            ###   ########.fr       */
+/*   Updated: 2026/02/23 17:46:04 by amtan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-#include <errno.h>
-#include <unistd.h>
+#include <stdlib.h>
 
-static int	append_num(char *buf, int *i, long n)
-{
-	char	tmp[32];
-	int		j;
-
-	j = 0;
-	if (n == 0)
+static void	fatal_post(sem_t *sem)
 	{
-		tmp[j] = '0';
-		j++;
-	}
-	while (n > 0)
-	{
-		tmp[j] = (char)('0' + (n % 10));
-		n /= 10;
-		j++;
-	}
-	j--;
-	while (j >= 0)
-	{
-		buf[*i] = tmp[j];
-		(*i)++;
-		j--;
-	}
-	buf[*i] = ' ';
-	(*i)++;
-	return (0);
-}
-
-static int	append_str(char *buf, int *i, const char *s)
-{
-	while (*s)
-	{
-		buf[*i] = *s;
-		(*i)++;
-		s++;
-	}
-	buf[*i] = '\n';
-	(*i)++;
-	return (0);
-}
-
-static int	write_line(long ts, int id, const char *msg)
-{
-	char	buf[128];
-	int		i;
-	ssize_t	off;
-	ssize_t	n;
-
-	i = 0;
-	append_num(buf, &i, ts);
-	append_num(buf, &i, id);
-	append_str(buf, &i, msg);
-	off = 0;
-	while (off < (ssize_t)i)
-	{
-		n = write(1, buf + off, (size_t)(i - off));
-		if (n < 0)
-		{
-			if (errno == EINTR)
-				continue ;
-			return (1);
-		}
-		if (n == 0)
-			return (1);
-		off += n;
-	}
-	return (0);
+	if (sem_post_retry(sem))
+		exit(EXIT_ERR);
 }
 
 int	print_state(t_philo *philo, const char *msg)
 {
-	long	now;
+	t_table	*table;
+	long	ts;
 	int		rc;
 
-	if (!philo || !philo->table || !msg)
+	if (!philo || !msg || !philo->table)
 		return (1);
-	if (sem_wait_retry(philo->table->sem_print))
-		return (1);
-	if (now_ms(&now))
+	table = philo->table;
+	if (sem_wait_retry(table->sem_end))
+		exit(EXIT_ERR);
+	if (sem_wait_retry(table->sem_print))
 	{
-		sem_post(philo->table->sem_print);
-		return (1);
+		fatal_post(table->sem_end);
+		exit(EXIT_ERR);
 	}
-	rc = write_line(now - philo->table->start_ms, philo->id, msg);
-	if (sem_post(philo->table->sem_print))
-		rc = 1;
+	rc = since_start_ms(table, &ts);
+	if (!rc)
+		rc = write_line(ts, philo->id, msg);
+	fatal_post(table->sem_print);
+	fatal_post(table->sem_end);
 	return (rc);
 }
 
 int	print_death(t_philo *philo)
 {
-	long	now;
+	t_table	*table;
+	long	ts;
 
 	if (!philo || !philo->table)
-		return (1);
-	if (sem_wait_retry(philo->table->sem_print))
-		return (1);
-	if (now_ms(&now))
+		exit(EXIT_ERR);
+	table = philo->table;
+	if (sem_wait_retry(table->sem_end))
+		exit(EXIT_ERR);
+	if (sem_wait_retry(table->sem_print))
+		exit(EXIT_ERR);
+	if (since_start_ms(table, &ts) || write_line(ts, philo->id, "died"))
 	{
-		sem_post(philo->table->sem_print);
-		return (1);
+		fatal_post(table->sem_print);
+		exit(EXIT_ERR);
 	}
-	return (write_line(now - philo->table->start_ms, philo->id, "died"));
+	fatal_post(table->sem_print);
+	return (0);
 }

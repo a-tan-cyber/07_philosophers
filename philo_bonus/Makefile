@@ -6,7 +6,7 @@
 #    By: amtan <amtan@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/27 23:17:02 by amtan             #+#    #+#              #
-#    Updated: 2026/02/12 21:22:00 by amtan            ###   ########.fr        #
+#    Updated: 2026/02/23 18:17:57 by amtan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,15 +16,12 @@ CC		:=	cc
 CFLAGS	:=	-Wall -Wextra -Werror
 CFLAGS	+=	-pthread
 
-SRCS	:=	main_bonus.c \
-		  parse_bonus.c \
-		  sems_bonus.c \
-		  state_sem_bonus.c \
-		  time_bonus.c \
-		  log_bonus.c \
-		  philo_bonus.c \
-		  philo_actions_bonus.c \
-		  utils_bonus.c
+SRCS	:= 	main_bonus.c parse_bonus.c utils_bonus.c init_bonus.c \
+			destroy_bonus.c time_bonus.c log_bonus.c log_line_bonus.c \
+			simulation_bonus.c simulation_utils_bonus.c simulation_fork_bonus.c \
+			simulation_wait_bonus.c sem_utils_bonus.c philo_process_bonus.c \
+			monitor_bonus.c philo_loop_bonus.c philo_loop_helpers_bonus.c \
+			philo_take_bonus.c philo_eat_bonus.c
 				
 OBJS	:=	$(SRCS:.c=.o)
 
